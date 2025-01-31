@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Read PDF Endpoint</title>
+</head>
+<body>
+    <h1>Test Read PDF Endpoint</h1>
+    <form action="/playground/read_pdf/" method="POST" enctype="application/x-www-form-urlencoded">
+        {% csrf_token %}
+        <label for="data">Enter some data:</label><br>
+        <textarea id="data" name="data" rows="4" cols="50"></textarea><br><br>
+        <button type="submit">Send Data</button>
+    </form>
+</body>
+</html>

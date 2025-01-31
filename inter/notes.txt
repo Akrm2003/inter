@@ -1,0 +1,7 @@
+the init file defines the directory its on as a package
+settings.py defines our application's settings (dig more)
+urls.py defines url of our app
+asgi.py & wsgi.py are used for deployment
+manage.py is a wrapper around django admin (instead of django admin we're gonna use manage.py):
+advantages of manage.py over django admin:
+	- it takes the settings of the project into account
