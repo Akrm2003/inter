@@ -18,19 +18,40 @@ def read_pdf(request):
 
 @csrf_exempt
 def read_pdf_view(request):
-    if request.method != "POST":
-        return JsonResponse({"error": "Only POST requests are allowed"}, status=405)
+    if request.method == "POST":
+        if "file" not in request.FILES:
+            return JsonResponse({"error": "No file provided"}, status=400)
 
-    if "file" not in request.FILES:
-        return JsonResponse({"error": "No file provided"}, status=400)
+        pdf_file = request.FILES["file"]
 
-    pdf_file = request.FILES["file"]
+        try:
+            doc = fitz.open(stream=pdf_file.read(), filetype="pdf")
+            text = ""
+            for page in doc:
+                text += page.get_text()
 
-    try:
-        doc = fitz.open(stream=pdf_file.read(), filetype="pdf")
-        text = ""
-        for page in doc:
-            text += page.get_text()
-        return JsonResponse({"content": text}, status=200)
-    except Exception as e:
-        return JsonResponse({"error": str(e)}, status=500)
+            # Rendering the response with extracted content
+            return render(request, 'html/upload_pdf.html', {'content': text})
+
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+    # For GET request, just render the upload form
+    return render(request, 'html/upload_pdf.html')
+# def read_pdf_view(request):
+#     if request.method != "POST":
+#         return JsonResponse({"error": "Only POST requests are allowed"}, status=405)
+
+#     if "file" not in request.FILES:
+#         return JsonResponse({"error": "No file provided"}, status=400)
+
+#     pdf_file = request.FILES["file"]
+
+#     try:
+#         doc = fitz.open(stream=pdf_file.read(), filetype="pdf")
+#         text = ""
+#         for page in doc:
+#             text += page.get_text()
+#         return JsonResponse({"content": text}, status=200)
+#     except Exception as e:
+#         return JsonResponse({"error": str(e)}, status=500)
