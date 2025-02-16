@@ -4,7 +4,7 @@ from . import views
 # this is called a URLconf
 urlpatterns = [
 	path('hello/', views.say_hello),
-	path('read_pdf/', views.read_pdf),
 	path('test_endpoints/', views.test_endpoints),
+ 	path("read-pdf/", views.read_pdf_view, name="read_pdf"),
 	path('', views.wellcome)
 ]
