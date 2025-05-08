@@ -3,7 +3,10 @@ from django.http import HttpResponse
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import fitz
-# request handler
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_groq import ChatGroq
+
+
 def say_hello(request):
     return render(request, 'html/hello.html', {"name": "akram", "age": 21}) #render already returns an HttpResponse 
 def wellcome(request):
@@ -17,41 +20,29 @@ def read_pdf(request):
     return HttpResponse("provide data.")
 
 @csrf_exempt
-def read_pdf_view(request):
+def pdf_summury(request):
+    summary = None
+
     if request.method == "POST":
         if "file" not in request.FILES:
-            return JsonResponse({"error": "No file provided"}, status=400)
+            return render(request, "html/upload_pdf.html", {"error": "No file provided"})
 
         pdf_file = request.FILES["file"]
 
         try:
             doc = fitz.open(stream=pdf_file.read(), filetype="pdf")
-            text = ""
-            for page in doc:
-                text += page.get_text()
-
-            # Rendering the response with extracted content
-            return render(request, 'html/upload_pdf.html', {'content': text})
-
+            pdf_text = "".join(page.get_text() for page in doc)
         except Exception as e:
-            return JsonResponse({"error": str(e)}, status=500)
+            return render(request, "html/upload_pdf.html", {"error": str(e)})
 
-    # For GET request, just render the upload form
-    return render(request, 'html/upload_pdf.html')
-# def read_pdf_view(request):
-#     if request.method != "POST":
-#         return JsonResponse({"error": "Only POST requests are allowed"}, status=405)
+        chat = ChatGroq(temperature=0, model_name="llama-3.1-8b-instant")
+        system = "You are a helpful assistant, specilized in summurizing texts"
+        human = "{text}"
+        prompt = ChatPromptTemplate.from_messages([("system", system), ("human", human)])
+        chain = prompt | chat
 
-#     if "file" not in request.FILES:
-#         return JsonResponse({"error": "No file provided"}, status=400)
+        result = chain.invoke({"text": pdf_text})
+        summary = result.content
+    print(summary)
+    return render(request, "html/upload_pdf.html", {"human": summary})
 
-#     pdf_file = request.FILES["file"]
-
-#     try:
-#         doc = fitz.open(stream=pdf_file.read(), filetype="pdf")
-#         text = ""
-#         for page in doc:
-#             text += page.get_text()
-#         return JsonResponse({"content": text}, status=200)
-#     except Exception as e:
-#         return JsonResponse({"error": str(e)}, status=500)

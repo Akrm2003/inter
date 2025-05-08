@@ -1,23 +1,25 @@
-<!-- templates/upload_pdf.html -->
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Upload PDF</title>
 </head>
 <body>
-    <h1>Upload a PDF File</h1>
-    <form action="{% url 'read_pdf' %}" method="post" enctype="multipart/form-data">
+    <h1>Upload a PDF to Summarize</h1>
+
+    <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        <label for="file">Choose a PDF file:</label>
-        <input type="file" id="file" name="file" accept=".pdf" required>
+        <input type="file" name="file" accept="application/pdf" required>
         <button type="submit">Upload</button>
     </form>
 
-    {% if content %}
-        <h2>Extracted Content:</h2>
-        <pre>{{ content }}</pre>
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
+
+    {% if human %}
+        <h2>Summary:</h2>
+        <p>{{ human }}</p>
     {% endif %}
 </body>
 </html>
+
