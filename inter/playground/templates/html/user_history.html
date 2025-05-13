@@ -1,0 +1,19 @@
+<h2>User Summaries</h2>
+<form method="get">
+    <input type="text" name="user" placeholder="Enter your username" required>
+    <button type="submit">View My Summaries</button>
+</form>
+
+{% if summaries %}
+    <ul>
+        {% for summary in summaries %}
+            <li>
+                <strong>{{ summary.uploaded_at }}:</strong><br>
+                <strong>Full Text:</strong> <em>{{ summary.full_text|truncatewords:20 }}</em><br>
+                <strong>Summary:</strong> <em>{{ summary.summary|truncatewords:20 }}</em>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No summaries found for this user.</p>
+{% endif %}
