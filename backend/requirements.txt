@@ -4,3 +4,4 @@ langchain
 langchain-core
 langchain_groq
 groq
+django-cors-headers
